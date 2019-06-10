@@ -25,17 +25,24 @@ source("./R/functionLogLik.R")
 source("./R/functionOptim.R")
 source("./R/create_Rscript_SWIFT.r")
 
+###########################################################
+## Parameters
 # select a true beta value
-Bs=10  # number of itterations over beta trues
+Bs=25  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(5,10,25)
 scenarios <- 4
     
 # define/load the optimization function
-itterations=10
+itterations=100
 RunForWhichIsotope='Both'
     
 scenario_FD='Sc4'      # nature equals strongest scenario
+
+# Submission parameters
+args <- c('-l walltime=12:00:00','-l nodes=1:ppn=16')
+
+###########################################################
 
 # CREATION OF TRUE FIELD DATA SAMPLES
 #-------------------------------------------------------------------------------
@@ -62,7 +69,7 @@ for (iBs in seq(Bs)){
   }
 }
 
-# Submitting files
+# Creating Submission files
 Nruns <- Bs*scenarios*length(FDtotal)
 run_per_nodes <- 100
 folder_all <- seq(1,Nruns,run_per_nodes)
@@ -83,6 +90,16 @@ for (ifolder in seq(folder_all)){
   write("ml R/3.4.4-intel-2018a-X11-20180131",file=launcher_file,append=TRUE)
   write(paste("mpirun","/data/gent/vo/000/gvo00074/pecan/modellauncher/modellauncher",job_list_file),file=launcher_file,append=TRUE)
 }
+
+# Submitting files
+cmd <- "qsub"
+for (ifolder in seq(folder_all)){
+  folder <- file.path(getwd(),'runs',paste0('run_',sprintf('%05i',folder_all[ifolder])))
+  launcher_file <- file.path(folder,'launcher.sh')
+  out <- system2(cmd, c(args,launcher_file), stdout = TRUE, stderr = TRUE)
+}
+
+
 
 
 
