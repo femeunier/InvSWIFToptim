@@ -13,7 +13,7 @@ library('ks')
 # load standard model parameters
 
 setwd(getwd())
-maindir <- dirname(getwd())
+maindir <- (getwd())
 
 source('./R/dataprepStandardPara.R')
 source('./R/dataprepRestrictionRanges.R')
