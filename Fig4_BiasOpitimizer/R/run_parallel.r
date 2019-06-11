@@ -12,7 +12,7 @@ library('ks')
 
 # load standard model parameters
 
-setwd("/data/gent/vo/000/gvo00074/felicien/R/InvSWIFToptim/Fig4_BiasOpitimizer")
+setwd(getwd())
 maindir <- dirname(getwd())
 
 source('./R/dataprepStandardPara.R')
@@ -42,6 +42,7 @@ scenario_FD='Sc4'      # nature equals strongest scenario
 
 # Submission parameters
 args <- c('-l walltime=12:00:00','-l nodes=1:ppn=16')
+run_per_nodes <- 100
 
 ###########################################################
 
@@ -72,7 +73,6 @@ for (iBs in seq(Bs)){
 
 # Creating Submission files
 Nruns <- Bs*scenarios*length(FDtotal)
-run_per_nodes <- 100
 folder_all <- seq(1,Nruns,run_per_nodes)
 
 for (ifolder in seq(folder_all)){
