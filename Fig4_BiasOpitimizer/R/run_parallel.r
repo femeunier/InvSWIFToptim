@@ -12,7 +12,8 @@ library('ks')
 
 # load standard model parameters
 
-setwd("~/R/InvSWIFToptim/Fig4_BiasOpitimizer")
+setwd("/data/gent/vo/000/gvo00074/felicien/R/InvSWIFToptim/Fig4_BiasOpitimizer")
+maindir <- dirname(getwd())
 
 source('./R/dataprepStandardPara.R')
 source('./R/dataprepRestrictionRanges.R')
@@ -28,7 +29,7 @@ source("./R/create_Rscript_SWIFT.r")
 ###########################################################
 ## Parameters
 # select a true beta value
-Bs=25  # number of itterations over beta trues
+Bs=1  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(5,10,25)
 scenarios <- 4
@@ -82,13 +83,13 @@ for (ifolder in seq(folder_all)){
   writeLines(paste0("echo ",'"',"source('script.R')",'"',"| R --vanilla"),con = job_list_file)
   
   cmd_l <- lapply(simus,function(sim){
-    line <- file.path(dirname(folder),paste0('run_',sprintf('%05i',sim)))
-    write(line,file=job_list_file,append=TRUE)})
+  line <- file.path(dirname(folder),paste0('run_',sprintf('%05i',sim)))
+  write(line,file=job_list_file,append=TRUE)})
   
   launcher_file <- file.path(folder,'launcher.sh')
   writeLines("#!/bin/bash",con = launcher_file)
   write("ml R/3.4.4-intel-2018a-X11-20180131",file=launcher_file,append=TRUE)
-  write(paste("mpirun","/data/gent/vo/000/gvo00074/pecan/modellauncher/modellauncher",job_list_file),file=launcher_file,append=TRUE)
+  write(paste("mpirun",file.path(maindir,"modellauncher","modellauncher"),job_list_file),file=launcher_file,append=TRUE)
 }
 
 # Submitting files
