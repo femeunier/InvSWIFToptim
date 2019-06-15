@@ -1,4 +1,4 @@
-create_Rscript_SWIFT <- function(file,itterations=10,RunForWhichIsotope='Both',scenario=1,Btrue,run_id,,N_FD,iBs) {
+create_Rscript_SWIFT <- function(file,itterations=10,RunForWhichIsotope='Both',scenario=1,Btrue,run_id,N_FD,iBs) {
   
   writeLines("rm(list=ls())",con = file)
   
