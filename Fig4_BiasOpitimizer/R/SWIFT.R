@@ -242,7 +242,9 @@ SWIFT_SB<-function(ARi=NULL, D2Hsoil=NULL, k=NULL, PSIs=NULL,  SF=NULL,  t=NULL,
       
       # Summation over all soil layers
       D2Hxylem[a] <- sum(D2Hvec, na.rm=TRUE)
-      rm(D2Hvec);
+      if (exists("D2Hvec")){
+      	rm(D2Hvec)
+      }
     }    
   }
   return(D2Hxylem)

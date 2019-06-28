@@ -5,7 +5,7 @@
 LogLikOptim <- function(x) {
   LogLik(Beta=x,B,FD, itterations, Scenario,
          RunForWhichIsotope ,Z , relSF, dZ ,
-         TCOR ,t, tF , Meissner, n)
+         TCOR ,t, tF , Meissner, n,param_sensitivity)
 }
 
 # LogLikOptim_solo <- function(x) {

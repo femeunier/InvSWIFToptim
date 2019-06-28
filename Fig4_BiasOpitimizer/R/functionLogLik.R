@@ -7,11 +7,13 @@
 LogLik <- function( Beta=NULL, B=NULL,
                     FieldData=NULL, itterations=NULL,  Scenario=NULL,
                     RunForWhichIsotope = NULL,Z = NULL, relSF = NULL, dZ = NULL,
-                    TCOR = NULL, t=NULL, tF = NULL , Meissner = NULL, ndays=NULL){
+                    TCOR = NULL, t=NULL, tF = NULL , Meissner = NULL, ndays=NULL,param_sensitivity = NULL){
+  
+  #print(param_sensitivity)
   
   # A. GENERATE ISOSCAPE FOR SPECIFIC BETA
   PAisospace<-RandomDataToIsospace(itterations, B, Scenario, Beta, RunForWhichIsotope, 
-                                   Z, relSF,dZ, TCOR, t, tF, Meissner, ndays)   
+                                   Z, relSF,dZ, TCOR, t, tF, Meissner, ndays,param_sensitivity)   
   
   
   # Calculate the loglikelyhood

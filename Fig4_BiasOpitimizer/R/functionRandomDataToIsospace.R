@@ -7,10 +7,16 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
                                  betaPA = NULL, RunForWhichIsotope = NULL,
                                  Z = NULL, relSF = NULL, dZ = NULL,
                                  TCOR = NULL,t=NULL, tF = NULL , 
-                                 Meissner = NULL, ndays=NULL){
+                                 Meissner = NULL, ndays=NULL,
+                                 param_sensitivity = NULL){
   
   # 1. Create (bio)physical variable matrix all random
   FieldVar <- VarMatrix(itterations, scenario, betaPA)
+  
+  if(!is.null(param_sensitivity)){
+    FieldVar[,names(param_sensitivity)] <- param_sensitivity[[names(param_sensitivity)]]
+  }
+  
   # 2. Creat soil heterogeneity
   PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
                                    DataType="PSI", Z, SaveData="NO", Meissner)
