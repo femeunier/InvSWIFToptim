@@ -12,10 +12,7 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
   
   # 1. Create (bio)physical variable matrix all random
   FieldVar <- VarMatrix(itterations, scenario, betaPA)
-  
-  if(!is.null(param_sensitivity)){
-    FieldVar[,names(param_sensitivity)] <- param_sensitivity[[names(param_sensitivity)]]
-  }
+
   
   # 2. Creat soil heterogeneity
   PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
@@ -26,6 +23,20 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
   
   soilOxygen <- SoilHeterogeneity(itterations, scenario=scenario, 
                                   DataType="D18O", Z, SaveData="NO", Meissner)
+  
+  if(!is.null(param_sensitivity)){
+    
+    if (names(param_sensitivity) == "SoilHeterogeneity"){
+      Meissner_mod <- Meissner
+      Meissner_mod$sdPsi  <- 0
+      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*param_sensitivity[[names(param_sensitivity)]] 
+      
+      PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
+                                       DataType="PSI", Z, SaveData="NO", Meissner_mod)
+    } else {
+      FieldVar[,names(param_sensitivity)] <- param_sensitivity[[names(param_sensitivity)]] 
+    }
+  }
   
   #3. create isospaces
   isospaces <- IsoSpace (itterations,B, FieldVar, 
@@ -44,6 +55,12 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
   if (RunForWhichIsotope == 'Both'){
     isospaces[,"D2H"] <- isospaces[,"D2H"]+rnorm(itterations, mean=0, sd = 1)
     isospaces[,"D18O"] <- isospaces[,"D18O"]+rnorm(itterations, mean=0, sd = 0.1)
+  }
+  
+  if(!is.null(param_sensitivity)){
+    if (names(param_sensitivity) == "SoilHeterogeneity"){
+      isospaces <- cbind(isospaces,SoilHeterogeneity=param_sensitivity[[names(param_sensitivity)]])
+    }
   }
   
   # Return as matrix

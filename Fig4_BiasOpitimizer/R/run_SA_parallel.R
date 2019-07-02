@@ -29,7 +29,7 @@ source("./R/create_Rscript_SWIFT.r")
 ###########################################################
 ## Parameters
 # select a true beta value
-Bs=10  # number of itterations over beta trues
+Bs=25  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
@@ -48,23 +48,24 @@ run_per_nodes <- 100
 # CREATION OF TRUE FIELD DATA SAMPLES
 #-------------------------------------------------------------------------------
 
-param <- 'ARtot'
-values <- seq(0.1,2,length.out = 3)*75
-biases <- rep(NA,length(values))
+# param <- 'ARtot'
+# values <- seq(0.1,2,length.out = 3)*75
+
+param <- 'SoilHeterogeneity'
+values <- seq(0.75,1.25,length.out = 3)
 
 compt <- 1
 for (iBs in seq(Bs)){
   Btrue=Btrues[iBs]
   for (iFD in seq_along(FDtotal)){
     FDitter=FDtotal[iFD]   # number of samples to generate
-    
     for (ivalue in seq_along(values)){
       
       param_sensitivity <- data.frame(values[ivalue])
       names(param_sensitivity) <- param
       
       # start.time <- Sys.time()
-      FD<-RandomDataToIsospace(FDitter, B, scenario = scenario_FD,betaPA = Btrue,
+      FD<-RandomDataToIsospace(itterations = FDitter, B, scenario = scenario_FD, betaPA = Btrue,
                                RunForWhichIsotope="Both",Z, relSF,dZ, TCOR, t, tF, Meissner, n,param_sensitivity) 
           
       folder <- file.path(getwd(),'runs',paste0('run_',sprintf('%05i',compt)))
@@ -131,7 +132,24 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
+Nsimus <- 500
+maindir <- (getwd())
+biases <- param_v <- rep(NA,Nsimus)
+param <- 'ARtot'
+for (isimu in seq(1,Nsimus)){
+  
+  current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',isimu)))
+  results_file <- file.path(current_dir,'results.csv')
+  results <- read.csv(file = results_file)
+  biases[isimu] <- results$Btrue - results$Bsc
+  
+  input_files <- list.files(path = current_dir,pattern = "FD*")
+  input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
+  input <- read.csv(file.path(current_dir,input_file[1]))
+  param_v[isimu] <- input[[param]][1]
+}
 
-
+boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'ARtot',ylab='Bias')
+abline(h=0,col ='black',lty = 2,lwd=2)
 
 
