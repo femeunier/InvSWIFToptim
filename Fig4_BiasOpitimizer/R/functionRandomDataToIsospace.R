@@ -29,7 +29,7 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
     if (names(param_sensitivity) == "SoilHeterogeneity"){
       Meissner_mod <- Meissner
       Meissner_mod$sdPsi  <- 0
-      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*param_sensitivity[[names(param_sensitivity)]] 
+      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
       
       PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
                                        DataType="PSI", Z, SaveData="NO", Meissner_mod)

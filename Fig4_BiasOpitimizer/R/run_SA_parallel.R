@@ -132,10 +132,10 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
-Nsimus <- 500
+Nsimus <- 75
 maindir <- (getwd())
 biases <- param_v <- rep(NA,Nsimus)
-param <- 'ARtot'
+param <- 'SoilHeterogeneity'
 for (isimu in seq(1,Nsimus)){
   
   current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',isimu)))
