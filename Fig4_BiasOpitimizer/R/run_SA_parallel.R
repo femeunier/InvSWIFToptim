@@ -132,24 +132,36 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
-Nsimus <- 75
+Bs=25  # number of itterations over beta trues
+FDtotal=c(50)
+param <- 'SoilHeterogeneity'
+values <- seq(0.75,1.25,length.out = 3)
+Nsimus = Bs*length(FDtotal)*length(values)
+
 maindir <- (getwd())
 biases <- param_v <- rep(NA,Nsimus)
 param <- 'SoilHeterogeneity'
-for (isimu in seq(1,Nsimus)){
+compt <- 1
+for (iBs in seq(Bs)){
+  for (iFD in seq_along(FDtotal)){
+    for (ivalue in seq_along(values)){
   
-  current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',isimu)))
-  results_file <- file.path(current_dir,'results.csv')
-  results <- read.csv(file = results_file)
-  biases[isimu] <- results$Btrue - results$Bsc
-  
-  input_files <- list.files(path = current_dir,pattern = "FD*")
-  input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
-  input <- read.csv(file.path(current_dir,input_file[1]))
-  param_v[isimu] <- input[[param]][1]
+      current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',compt)))
+      results_file <- file.path(current_dir,'results.csv')
+      results <- read.csv(file = results_file)
+      biases[compt] <- results$Btrue - results$Bsc
+      
+      #input_files <- list.files(path = current_dir,pattern = "FD*")
+      #input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
+      input_file <- file.path(paste0('FD_Btrue_',iBs,'_FD_',FDtotal[iFD],'.csv'))
+      input <- read.csv(file.path(current_dir,input_file[1]))
+      param_v[compt] <- input[[param]][1]
+      compt <- compt + 1
+    }
+  }
 }
 
-boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'ARtot',ylab='Bias')
+boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'Psi factor',ylab='Bias')
 abline(h=0,col ='black',lty = 2,lwd=2)
 
 
