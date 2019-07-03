@@ -53,7 +53,7 @@ run_per_nodes <- 100
 # values <- seq(0.1,2,length.out = 3)*75
 
 # param <- 'SoilHeterogeneity'
-# values <- seq(0.75,1.25,length.out = 3)
+# values <- seq(0.,1,length.out = 3)
 
 param <- 'allGradients'
 values <- seq(0.2,5,length.out=3)
