@@ -37,9 +37,10 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
       
       Meissner_mod <- Meissner
       Meissner_mod$sdPsi  <- Meissner_mod$sdDeuterium <- Meissner_mod$sdOxygen <-0
-      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
-      Meissner_mod$avgDeuterium <- Meissner_mod$avgDeuterium*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
-      Meissner_mod$avgOxygen <- Meissner_mod$avgOxygen*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
+      
+      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgPsi)))
+      Meissner_mod$avgDeuterium <- Meissner_mod$avgDeuterium*(1-seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgDeuterium)))
+      Meissner_mod$avgOxygen <- Meissner_mod$avgOxygen*(1-seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgOxygen)))
       
       
       PSIprofiles <- SoilHeterogeneity(itterations, scenario, 

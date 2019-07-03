@@ -35,7 +35,7 @@ Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
 # define/load the optimization function
-itterations=20
+itterations=250
 RunForWhichIsotope='Both'
 
 scenario_FD='Sc3'      # nature equals strongest scenario
@@ -56,7 +56,7 @@ run_per_nodes <- 100
 # values <- seq(0.75,1.25,length.out = 3)
 
 param <- 'allGradients'
-values <- c(0.2,1,5)
+values <- seq(0.2,5,length.out=3)
 
 compt <- 1
 for (iBs in seq(Bs)){
