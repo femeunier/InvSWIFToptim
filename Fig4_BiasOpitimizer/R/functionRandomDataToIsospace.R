@@ -33,6 +33,23 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
       
       PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
                                        DataType="PSI", Z, SaveData="NO", Meissner_mod)
+    } else if (names(param_sensitivity) == "allGradients"){
+      
+      Meissner_mod <- Meissner
+      Meissner_mod$sdPsi  <- Meissner_mod$sdDeuterium <- Meissner_mod$sdOxygen <-0
+      Meissner_mod$avgPsi <- Meissner_mod$avgPsi*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
+      Meissner_mod$avgDeuterium <- Meissner_mod$avgDeuterium*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
+      Meissner_mod$avgOxygen <- Meissner_mod$avgOxygen*seq(param_sensitivity[[names(param_sensitivity)]],1,length.out = length(Meissner_mod$avgPsi))
+      
+      
+      PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
+                                       DataType="PSI", Z, SaveData="NO", Meissner_mod)
+      
+      soilDeuterium <- SoilHeterogeneity(itterations, scenario=scenario, 
+                                         DataType="D2H", Z, SaveData="NO", Meissner_mod)
+      
+      soilOxygen <- SoilHeterogeneity(itterations, scenario=scenario, 
+                                      DataType="D18O", Z, SaveData="NO", Meissner_mod)
     } else {
       FieldVar[,names(param_sensitivity)] <- param_sensitivity[[names(param_sensitivity)]] 
     }
@@ -59,7 +76,9 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
   
   if(!is.null(param_sensitivity)){
     if (names(param_sensitivity) == "SoilHeterogeneity"){
-      isospaces <- cbind(isospaces,SoilHeterogeneity=param_sensitivity[[names(param_sensitivity)]])
+      isospaces <- cbind(isospaces,SoilHeterogeneity = param_sensitivity[[names(param_sensitivity)]])
+    } else if (names(param_sensitivity) == "allGradients"){
+      isospaces <- cbind(isospaces,allGradients = param_sensitivity[[names(param_sensitivity)]])
     }
   }
   

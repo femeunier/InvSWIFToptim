@@ -9,6 +9,7 @@ library("SWIFT")
 library("GenSA")
 library('sm')
 library('ks')
+library(dplyr)
 
 # load standard model parameters
 
@@ -29,7 +30,7 @@ source("./R/create_Rscript_SWIFT.r")
 ###########################################################
 ## Parameters
 # select a true beta value
-Bs=25  # number of itterations over beta trues
+Bs=2  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
@@ -51,8 +52,11 @@ run_per_nodes <- 100
 # param <- 'ARtot'
 # values <- seq(0.1,2,length.out = 3)*75
 
-param <- 'SoilHeterogeneity'
-values <- seq(0.75,1.25,length.out = 3)
+# param <- 'SoilHeterogeneity'
+# values <- seq(0.75,1.25,length.out = 3)
+
+param <- 'allGradients'
+values <- c(0.2,1,5)
 
 compt <- 1
 for (iBs in seq(Bs)){
@@ -135,7 +139,7 @@ for (ifolder in seq(folder_all)){
 Bs=25  # number of itterations over beta trues
 FDtotal=c(50)
 param <- 'SoilHeterogeneity'
-values <- seq(0.75,1.25,length.out = 3)
+values <- seq(0.2,5,length.out = 20)
 Nsimus = Bs*length(FDtotal)*length(values)
 
 maindir <- (getwd())
@@ -161,7 +165,14 @@ for (iBs in seq(Bs)){
   }
 }
 
-boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'Psi factor',ylab='Bias')
+m_b <- aggregate(biases, list(param_v), mean)
+names(m_b) <- c("param","m_b")
+data <- data.frame(param=param_v,bias=biases)
+m_b_all <- dplyr::left_join(data,m_b)
+m_b_all$unbias <- m_b_all$bias - m_b_all$m_b
+m_b2 <- aggregate(m_b_all$unbias, list(m_b_all$param) , mean)
+
+boxplot(biases ~ param,m_b_all,xlab = 'Psi factor',ylab='Bias')
 abline(h=0,col ='black',lty = 2,lwd=2)
 
 
