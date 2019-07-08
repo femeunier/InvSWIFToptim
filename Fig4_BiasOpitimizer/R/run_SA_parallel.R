@@ -9,7 +9,6 @@ library("SWIFT")
 library("GenSA")
 library('sm')
 library('ks')
-library(dplyr)
 
 # load standard model parameters
 
@@ -30,12 +29,12 @@ source("./R/create_Rscript_SWIFT.r")
 ###########################################################
 ## Parameters
 # select a true beta value
-Bs=2  # number of itterations over beta trues
+Bs=10  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
 # define/load the optimization function
-itterations=250
+itterations=20
 RunForWhichIsotope='Both'
 
 scenario_FD='Sc3'      # nature equals strongest scenario
@@ -49,27 +48,22 @@ run_per_nodes <- 100
 # CREATION OF TRUE FIELD DATA SAMPLES
 #-------------------------------------------------------------------------------
 
-# param <- 'ARtot'
-# values <- seq(0.1,2,length.out = 3)*75
-
-# param <- 'SoilHeterogeneity'
-# values <- seq(0.,1,length.out = 3)
-
 param <- 'allGradients'
-values <- seq(0.2,5,length.out=3)
+values <- seq(0,1,length.out = 3)
 
 compt <- 1
 for (iBs in seq(Bs)){
   Btrue=Btrues[iBs]
   for (iFD in seq_along(FDtotal)){
     FDitter=FDtotal[iFD]   # number of samples to generate
+    
     for (ivalue in seq_along(values)){
       
       param_sensitivity <- data.frame(values[ivalue])
       names(param_sensitivity) <- param
       
       # start.time <- Sys.time()
-      FD<-RandomDataToIsospace(itterations = FDitter, B, scenario = scenario_FD, betaPA = Btrue,
+      FD<-RandomDataToIsospace(itterations = FDitter, B, scenario = scenario_FD,betaPA = Btrue,
                                RunForWhichIsotope="Both",Z, relSF,dZ, TCOR, t, tF, Meissner, n,param_sensitivity) 
           
       folder <- file.path(getwd(),'runs',paste0('run_',sprintf('%05i',compt)))
@@ -136,43 +130,32 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
-Bs=25  # number of itterations over beta trues
-FDtotal=c(50)
-param <- 'SoilHeterogeneity'
-values <- seq(0.2,5,length.out = 20)
-Nsimus = Bs*length(FDtotal)*length(values)
-
+Nsimus <- 500
 maindir <- (getwd())
 biases <- param_v <- rep(NA,Nsimus)
-param <- 'SoilHeterogeneity'
-compt <- 1
-for (iBs in seq(Bs)){
-  for (iFD in seq_along(FDtotal)){
-    for (ivalue in seq_along(values)){
+param <- 'allGradients'
+values <- seq(0.,2,length.out=20)
+compt=1
+for (isimu in seq(1,Nsimus)){
   
-      current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',compt)))
-      results_file <- file.path(current_dir,'results.csv')
-      results <- read.csv(file = results_file)
-      biases[compt] <- results$Btrue - results$Bsc
-      
-      #input_files <- list.files(path = current_dir,pattern = "FD*")
-      #input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
-      input_file <- file.path(paste0('FD_Btrue_',iBs,'_FD_',FDtotal[iFD],'.csv'))
-      input <- read.csv(file.path(current_dir,input_file[1]))
+  current_dir <- file.path(maindir,'runs',paste0('run_',sprintf('%05i',isimu)))
+  results_file <- file.path(current_dir,'results.csv')
+  if (file.exists(results_file)){
+    results <- read.csv(file = results_file)
+    biases[compt] <- results$Btrue - results$Bsc
+    
+    input_files <- list.files(path = current_dir,pattern = "FD*")
+    input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
+    input <- read.csv(file.path(current_dir,input_file[1]))
+    if (length(input[[param]]>0)){
       param_v[compt] <- input[[param]][1]
-      compt <- compt + 1
+      compt=compt+1
     }
   }
 }
 
-m_b <- aggregate(biases, list(param_v), mean)
-names(m_b) <- c("param","m_b")
-data <- data.frame(param=param_v,bias=biases)
-m_b_all <- dplyr::left_join(data,m_b)
-m_b_all$unbias <- m_b_all$bias - m_b_all$m_b
-m_b2 <- aggregate(m_b_all$unbias, list(m_b_all$param) , mean)
+boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'Gradient heterogeneity',ylab='Bias')
+abline(h=0)
 
-boxplot(biases ~ param,m_b_all,xlab = 'Psi factor',ylab='Bias')
-abline(h=0,col ='black',lty = 2,lwd=2)
 
 
