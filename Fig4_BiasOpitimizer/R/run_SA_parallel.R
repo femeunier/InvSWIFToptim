@@ -130,11 +130,11 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
-Nsimus <- 500
+Nsimus <- 75
 maindir <- (getwd())
 biases <- param_v <- rep(NA,Nsimus)
 param <- 'allGradients'
-values <- seq(0.,2,length.out=20)
+values <- seq(0.,1,length.out=3)
 compt=1
 for (isimu in seq(1,Nsimus)){
   
@@ -146,7 +146,13 @@ for (isimu in seq(1,Nsimus)){
     
     input_files <- list.files(path = current_dir,pattern = "FD*")
     input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
-    input <- read.csv(file.path(current_dir,input_file[1]))
+    
+    if (length(input_file)){
+      infos <- file.info(file.path(current_dir,input_file))
+      Ord <- order(infos$mtime,decreasing = TRUE)
+      input_file <- input_file[Ord[1]]
+    }
+    input <- read.csv(file.path(current_dir,input_file))
     if (length(input[[param]]>0)){
       param_v[compt] <- input[[param]][1]
       compt=compt+1

@@ -45,13 +45,18 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
       
       soilDeuterium <- SoilHeterogeneity(itterations, scenario=scenario, 
                                          DataType="D2H", Z, SaveData="NO", Meissner_mod)
-      
+
       soilOxygen <- SoilHeterogeneity(itterations, scenario=scenario, 
                                       DataType="D18O", Z, SaveData="NO", Meissner_mod)
       
-      PSIprofiles <- PSIprofiles*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
-      soilDeuterium <- soilDeuterium*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
-      soilOxygen <- soilOxygen*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
+      Xmin <-  matrix(rep(PSIprofiles[nrow(PSIprofiles),],length(Z)),nrow = length(Z))
+      PSIprofiles <- Xmin + (PSIprofiles- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
+      
+      Xmin <-  matrix(rep(soilDeuterium[nrow(soilDeuterium),],length(Z)),nrow = length(Z))
+      soilDeuterium <- Xmin + (soilDeuterium - Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
+    
+      Xmin <-  matrix(rep(soilOxygen[nrow(soilOxygen),],length(Z)),nrow = length(Z))
+      soilOxygen <- Xmin + (soilOxygen- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
       
       # Meissner_mod$avgPsi <- Meissner_mod$avgPsi*(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgPsi)))
       # Meissner_mod$avgDeuterium <- Meissner_mod$avgDeuterium*(1-seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgDeuterium)))
