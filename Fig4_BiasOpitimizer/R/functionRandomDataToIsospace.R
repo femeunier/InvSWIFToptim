@@ -110,6 +110,8 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
       isospaces <- cbind(isospaces,SoilHeterogeneity = param_sensitivity[[names(param_sensitivity)]])
     } else if (names(param_sensitivity) == "allGradients"){
       isospaces <- cbind(isospaces,allGradients = param_sensitivity[[names(param_sensitivity)]])
+    } else if (names(param_sensitivity) == "IsotopeGradients"){
+      isospaces <- cbind(isospaces,allGradients = param_sensitivity[[names(param_sensitivity)]])
     }
   }
   
