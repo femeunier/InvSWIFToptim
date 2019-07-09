@@ -34,7 +34,7 @@ Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
 # define/load the optimization function
-itterations=20
+itterations=250
 RunForWhichIsotope='Both'
 
 scenario_FD='Sc3'      # nature equals strongest scenario
@@ -48,8 +48,8 @@ run_per_nodes <- 100
 # CREATION OF TRUE FIELD DATA SAMPLES
 #-------------------------------------------------------------------------------
 
-param <- 'allGradients'
-values <- seq(0,1,length.out = 3)
+param <- 'IsotopeGradients'
+values <- seq(-0.5,2,length.out = 6)
 
 compt <- 1
 for (iBs in seq(Bs)){
@@ -130,11 +130,11 @@ for (ifolder in seq(folder_all)){
 # plot.new()
 # plot(values,biases,type='l')
 
-Nsimus <- 75
+Nsimus <- 300
 maindir <- (getwd())
 biases <- param_v <- rep(NA,Nsimus)
 param <- 'allGradients'
-values <- seq(0.,1,length.out=3)
+#values <- seq(0.,1,length.out=3)
 compt=1
 for (isimu in seq(1,Nsimus)){
   
@@ -160,8 +160,12 @@ for (isimu in seq(1,Nsimus)){
   }
 }
 
+medians <- (aggregate(biases,list((param_v)),FUN = median))
+# rep(median,)
+
 boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'Gradient heterogeneity',ylab='Bias')
 abline(h=0)
+lines(medians$Group.1,medians$x)
 
 
 
