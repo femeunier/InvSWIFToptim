@@ -29,7 +29,7 @@ source("./R/create_Rscript_SWIFT.r")
 ###########################################################
 ## Parameters
 # select a true beta value
-Bs=10  # number of itterations over beta trues
+Bs=50  # number of itterations over beta trues
 Btrues= runif(Bs, min = 0.905, max = 0.995)
 FDtotal=c(50)
 
@@ -48,7 +48,7 @@ run_per_nodes <- 100
 # CREATION OF TRUE FIELD DATA SAMPLES
 #-------------------------------------------------------------------------------
 
-param <- 'IsotopeGradients'
+param <- 'SoilHeterogeneity'
 values <- seq(-0.5,2,length.out = 6)
 
 compt <- 1
@@ -147,7 +147,7 @@ for (isimu in seq(1,Nsimus)){
     input_files <- list.files(path = current_dir,pattern = "FD*")
     input_file <- grep(input_files,pattern='*scenario*', inv=T, value=T)
     
-    if (length(input_file)){
+    if (length(input_file)>1){
       infos <- file.info(file.path(current_dir,input_file))
       Ord <- order(infos$mtime,decreasing = TRUE)
       input_file <- input_file[Ord[1]]
@@ -165,7 +165,6 @@ medians <- (aggregate(biases,list((param_v)),FUN = median))
 
 boxplot(bias ~ param,data = data.frame(param=param_v,bias=biases),xlab = 'Gradient heterogeneity',ylab='Bias')
 abline(h=0)
-lines(medians$Group.1,medians$x)
 
 
 

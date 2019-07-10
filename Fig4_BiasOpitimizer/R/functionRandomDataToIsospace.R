@@ -28,12 +28,13 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
     
     if (names(param_sensitivity) == "SoilHeterogeneity"){
       Meissner_mod <- Meissner
-      Meissner_mod$sdPsi  <- 0
-      #Meissner_mod$avgPsi <- Meissner_mod$avgPsi*(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Meissner_mod$avgPsi)))
+      Meissner_mod$sdPsi <- 0
       
       PSIprofiles <- SoilHeterogeneity(itterations, scenario, 
                                        DataType="PSI", Z, SaveData="NO", Meissner_mod)
-      PSIprofiles <- PSIprofiles*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
+      
+      Xmin <-  matrix(rep(PSIprofiles[nrow(PSIprofiles),],length(Z)),nrow = length(Z))
+      PSIprofiles <- Xmin + (PSIprofiles- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
       
     } else if (names(param_sensitivity) == "allGradients"){
       
@@ -50,15 +51,12 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
                                       DataType="D18O", Z, SaveData="NO", Meissner_mod)
       
       Xmin <-  matrix(rep(PSIprofiles[nrow(PSIprofiles),],length(Z)),nrow = length(Z))
-      Xmax <-  matrix(rep(PSIprofiles[1,],length(Z)),nrow = length(Z))
       PSIprofiles <- Xmin + (PSIprofiles- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
       
       Xmin <-  matrix(rep(soilDeuterium[nrow(soilDeuterium),],length(Z)),nrow = length(Z))
-      Xmax <-  matrix(rep(PSIprofiles[1,],length(Z)),nrow = length(Z))
       soilDeuterium <- Xmin + (soilDeuterium - Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
     
       Xmin <-  matrix(rep(soilOxygen[nrow(soilOxygen),],length(Z)),nrow = length(Z))
-      Xmax <-  matrix(rep(PSIprofiles[1,],length(Z)),nrow = length(Z))
       soilOxygen <- Xmin + (soilOxygen- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
 
     } else if (names(param_sensitivity) == "IsotopeGradients") {
@@ -73,11 +71,9 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
                                       DataType="D18O", Z, SaveData="NO", Meissner_mod)
       
       Xmin <-  matrix(rep(soilDeuterium[nrow(soilDeuterium),],length(Z)),nrow = length(Z))
-      Xmax <-  matrix(rep(PSIprofiles[1,],length(Z)),nrow = length(Z))
       soilDeuterium <- Xmin + (soilDeuterium - Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
       
       Xmin <-  matrix(rep(soilOxygen[nrow(soilOxygen),],length(Z)),nrow = length(Z))
-      Xmax <-  matrix(rep(PSIprofiles[1,],length(Z)),nrow = length(Z))
       soilOxygen <- Xmin + (soilOxygen- Xmin)*matrix(rep(1+seq(param_sensitivity[[names(param_sensitivity)]],0,length.out = length(Z)),itterations),ncol=itterations)
 
       
