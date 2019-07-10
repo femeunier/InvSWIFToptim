@@ -111,7 +111,7 @@ RandomDataToIsospace <- function(itterations = NULL, B=NULL, scenario = NULL,
     } else if (names(param_sensitivity) == "allGradients"){
       isospaces <- cbind(isospaces,allGradients = param_sensitivity[[names(param_sensitivity)]])
     } else if (names(param_sensitivity) == "IsotopeGradients"){
-      isospaces <- cbind(isospaces,allGradients = param_sensitivity[[names(param_sensitivity)]])
+      isospaces <- cbind(isospaces,IsotopeGradients = param_sensitivity[[names(param_sensitivity)]])
     }
   }
   
